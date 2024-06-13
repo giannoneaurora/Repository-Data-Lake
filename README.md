@@ -1,2 +1,0 @@
-# Repository-Data-Lake
-Esercizi
