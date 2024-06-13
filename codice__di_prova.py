@@ -127,3 +127,6 @@ def main():
             break
         else:
           print("Unknown command.")
+
+if __name__ == "__main__":
+    main()
