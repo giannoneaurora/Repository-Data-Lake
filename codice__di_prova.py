@@ -1,5 +1,4 @@
 import redis
-import json
 from hashlib import sha256
 from getpass import getpass
 from datetime import datetime
@@ -13,7 +12,7 @@ def register_user(username):
     password = getpass("Enter your password: ")
     password_hash = sha256(password.encode()).hexdigest()
     user_data = {"password": password_hash, "status": "offline", "dnd": "off"}
-    redis_client.hmset(f"user:{username}", user_data)
+    redis_client.hset(f"user:{username}", mapping=user_data)
     print("User registered successfully.")
 
 def add_contact(username, contact):
@@ -34,7 +33,7 @@ def send_message(sender, recipient, message):
             "message": message,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        redis_client.rpush(f"messages:{recipient}", json.dumps(message_data))
+        redis_client.rpush(f"messages:{recipient}", message_data)
         print("Message sent successfully.")
     else:
         print("Recipient not in your contacts or does not exist.")
@@ -42,8 +41,7 @@ def send_message(sender, recipient, message):
 def read_messages(username):
     messages = redis_client.lrange(f"messages:{username}", 0, -1)
     for message in messages:
-        message_data = json.loads(message)
-        print(f"{message_data['timestamp']} - From {message_data['from']}: {message_data['message']}")
+        print(f"{message['timestamp']} - From {message['from']}: {message['message']}")
 
 def search_users(query):
     all_users = [key.split(':')[1] for key in redis_client.keys("user:*")]
@@ -71,8 +69,7 @@ def view_chat_history(user, contact):
     formatted_messages = []
 
     print(f"Chat with {contact} <<")
-    for msg_json in messages:
-        msg = json.loads(msg_json)
+    for msg in messages:
         if msg['from'] == user:
             prefix = ">"
         else:
