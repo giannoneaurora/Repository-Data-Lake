@@ -169,3 +169,27 @@ def login(username, password):
     if stored_password and check_password(stored_password.encode('utf-8'), password):
         return "Login successful"
     return "Invalid credentials"
+
+
+
+
+
+
+def send_message(sender, recipient, message):
+    if not redis_client.sismember(f'user:{sender}:contacts', recipient):
+        return "Recipient not in contacts list"
+    
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    dnd_status = redis_client.hget(f'user:{recipient}', 'dnd')
+    
+    if dnd_status == 'true':
+        return "User is in Do Not Disturb mode"
+    
+    redis_client.rpush(f'chat:{sender}:{recipient}', f'>{message} [{timestamp}]')
+    redis_client.rpush(f'chat:{recipient}:{sender}', f'<{message} [{timestamp}]')
+    return "Message sent"
+
+def read_messages(user, contact):
+    chat_key = f'chat:{user}:{contact}'
+    messages = redis_client.lrange(chat_key, 0, -1)
+    return messages
