@@ -120,3 +120,32 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+import bcrypt
+from app import redis_client
+
+def hash_password(password):
+    """Hash della password usando bcrypt."""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def check_password(stored_password, provided_password):
+    """Verifica se la password fornita corrisponde all'hash memorizzato."""
+    return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
+
+def register(username, password):
+    if redis_client.hexists('users', username):
+        return "User already exists"
+    hashed_password = hash_password(password)
+    redis_client.hset('users', username, hashed_password)
+    redis_client.hset(f'user:{username}', 'contacts', '')
+    redis_client.hset(f'user:{username}', 'dnd', 'false')
+    return "User registered successfully"
+
+def login(username, password):
+    stored_password = redis_client.hget('users', username)
+    if stored_password and check_password(stored_password.encode('utf-8'), password):
+        return "Login successful"
+    return "Invalid credentials"
