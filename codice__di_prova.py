@@ -12,8 +12,8 @@ def register_user(username):
         return
     password = getpass("Enter your password: ")
     password_hash = sha256(password.encode()).hexdigest()
-    user_data = json.dumps({"password": password_hash, "status": "offline", "dnd": "off"})
-    redis_client.set(f"user:{username}", user_data)
+    user_data = {"password": password_hash, "status": "offline", "dnd": "off"}
+    redis_client.hmset(f"user:{username}", user_data)
     print("User registered successfully.")
 
 def add_contact(username, contact):
@@ -25,8 +25,8 @@ def add_contact(username, contact):
 
 def send_message(sender, recipient, message):
     if redis_client.sismember(f"contacts:{sender}", recipient) and redis_client.exists(f"user:{recipient}"):
-        dnd_status = json.loads(redis_client.get(f"user:{recipient}"))["dnd"]
-        if dnd_password:
+        dnd_status = redis_client.hget(f"user:{recipient}", "dnd")
+        if dnd_status == "on":
             print("Recipient is in Do Not Disturb mode.")
             return
         message_data = {
@@ -45,27 +45,19 @@ def read_messages(username):
         message_data = json.loads(message)
         print(f"{message_data['timestamp']} - From {message_data['from']}: {message_data['message']}")
 
-
-register_user("")
-add_contact("", "")
-send_message("", "", "")
-read_messages("")
-
 def search_users(query):
     all_users = [key.split(':')[1] for key in redis_client.keys("user:*")]
     matched_users = [user for user in all_users if query in user]
     if matched_users:
         print("Found users:")
-        for user in matched_user:
+        for user in matched_users:
             print(user)
     else:
         print("No users found matching the query.")
 
 def set_do_not_disturb(username, status):
     if redis_client.exists(f"user:{username}"):
-        user_data = json.loads(redis_client.get(f"user:{username}"))
-        user_data['dnd'] = status  # 'on' or 'off'
-        redis_client.set(f"user:{username}", json.dumps(user_data))
+        redis_client.hset(f"user:{username}", "dnd", status)
         print(f"Do Not Disturb has been turned {'on' if status == 'on' else 'off'} for {username}.")
     else:
         print("User not found.")
@@ -78,7 +70,7 @@ def view_chat_history(user, contact):
     messages = redis_client.lrange(f"messages:{user}", 0, -1)
     formatted_messages = []
 
-    print(f"Chat con {contact} <<")
+    print(f"Chat with {contact} <<")
     for msg_json in messages:
         msg = json.loads(msg_json)
         if msg['from'] == user:
@@ -92,6 +84,7 @@ def view_chat_history(user, contact):
             print(message)
     else:
         print("No messages in this chat.")
+
 def main():
     while True:
         print("Commands: register, login, send, read, search, set_dnd, view_chat, exit")
@@ -126,7 +119,7 @@ def main():
             print("Exiting the application.")
             break
         else:
-          print("Unknown command.")
+            print("Unknown command.")
 
 if __name__ == "__main__":
     main()
