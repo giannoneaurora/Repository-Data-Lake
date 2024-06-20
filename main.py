@@ -19,7 +19,8 @@ except Exception as e:
 
 print(redis_client.ping())
 
-u_pattern = 'User:*' # Used to search all users
-
-users = redis_client.keys(pattern = u_pattern, decode_response = True)
-print(users)
+# Function to see all users of the app
+def users_list():
+    u_pattern = 'User:*' # Used to search all users
+    users = redis_client.keys(pattern = u_pattern, decode_response = True)
+    print(users)
