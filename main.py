@@ -24,3 +24,10 @@ def users_list():
     u_pattern = 'User:*' # Used to search all users
     users = redis_client.keys(pattern = u_pattern, decode_response = True)
     print(users)
+
+contacts = ['user1', 'user2', 'user3']
+username_test = 'username_test'
+for contact in contacts:
+    redis_client.sadd(f'Contacts:' + username_test, contact)
+rubrica = redis_client.smembers(f'Contacts:' + username_test)
+print(rubrica)
