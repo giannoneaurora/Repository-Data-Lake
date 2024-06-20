@@ -1,24 +1,18 @@
-import redis
-import bcrypt 
+import redis as rd
+import time
 
-from hashlib import sha256
 
 def register_user(client):
+    print("Benvenuto nella chat!\n Iscriviti!\n")
     username = str(input("Scrivi il nome utente: "))
-    if client.exists(username):
+    if client.exists(username): #if username in client:
         return False
     password = str(input("Scrivi la password: "))
     hashed_password = hash_password(password)
     client.hmset()
     client.set()
-    
-# Si potrebbe aggiungere lo stato, online/offline
-def create_hash_table(username, hashed_password):
-    user_data = {"Username:": username, "Hashed-Password:": hashed_password, "DoNotDisturb": False}
 
 
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 def search_user(searched_user):
     users = [u for u in redis_client.keys() if searched_user in str(u)]
