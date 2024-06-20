@@ -198,3 +198,7 @@ r = redis.Redis(host='redis-19153.c15.us-east-1-2.ec2.redns.redis-cloud.com',
                     password="FutfU3TjZa2sP4ne24aaVExF8A6oVn81")
 
 print(r.ping())
+
+
+db.sadd(f"{nome_utente_corrente}:contatti", nome_utente_contatto)
+return f"Utente {nome_utente_contatto} aggiunto ai contatti."
