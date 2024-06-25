@@ -1,6 +1,7 @@
 import redis as rd
 import bcrypt as bc
 #import pipreqs
+import chat_functions as cf
 
 
 host_name = 'redis-13428.c328.europe-west3-1.gce.redns.redis-cloud.com'
@@ -37,3 +38,14 @@ def contact_list(username):
   book = redis_client.smembers(f'Contacts:' + username_test)
   print(book)
 
+pubsub = redis_client.pubsub()
+
+if __name__ == "__main__":
+    channel = 'chat'
+    while True:
+        message = input("Enter message: ")
+        cf.send_message(redis_client, channel, message)
+
+while True:
+    message = input("Enter message: ")
+    send_message(channel, message)

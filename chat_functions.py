@@ -3,16 +3,22 @@ import time
 import user_interface as ui
 
 
-def create_chat(client, user1, user2):
-    pass
+def create_chat(pubsub, user1, user2):
+    pubsub.subscribe()
 
-def send_message(client, user_send, user_receive):
-    can_send_msg = ui.get_contact_dnd(client, user_receive)
-    if not can_send_msg:
-        return f"L'utente ha la modalità DND attiva. Riprova più tardi!" 
-    pass
-    
+def send_message(client, channel):
+    if not ui.get_contact_dnd(client, user_receive):
+        return f"L'utente ha la modalità Do Not Disturb attiva! Riprova più tardi!" 
+    client.publish(channel, message)
 
+
+def show_chat(pubsub):
+    for msg in pubsub.listen():
+        if msg['type'] == 'message':
+            handle_message(message)
+
+def handle_message(message):
+    print(f"Received message: {message['data'].decode('utf-8')}")
 
 def write_msg(client):
     msg_text = str(input("Scrivi il messaggio: "))
