@@ -28,9 +28,12 @@ def users_list():
     users = redis_client.keys(pattern = u_pattern, decode_response = True)
     print(users)
 
-contacts = ['user1', 'user2', 'user3']
+contacts_test = ['user1', 'user2', 'user3']
 username_test = 'username_test'
-for contact in contacts:
-    redis_client.sadd(f'Contacts:' + username_test, contact)
-rubrica = redis_client.smembers(f'Contacts:' + username_test)
-print(rubrica)
+
+def contact_list(username):
+  for contact in contacts:
+      redis_client.sadd(f'Contacts:' + username_test, contact)
+  book = redis_client.smembers(f'Contacts:' + username_test)
+  print(book)
+
