@@ -25,3 +25,8 @@ def write_msg(client):
     msg_time = time.time().strftime('%H:%M:%S')
     chat_mapping = {"Messaggio: " + msg_text,"OrarioInvio: " + msg_time}
     return chat_mapping
+
+
+def create_room_id(user1,user2):
+    sorted_id = sorted(user1, user2) 
+    return f"{sorted_id[0]}:{sorted_id[1]}"
