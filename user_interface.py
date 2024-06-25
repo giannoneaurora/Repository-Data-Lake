@@ -14,8 +14,18 @@ def register_user(client):
     client.set()
     return True
 
+def get_contact_dnd(client, contact):
+    dnd_state = client.hget('Users'+ contact, 'DoNotDisturb')
+    try:
+        if dnd_state == 'OFF':
+            return False
+        elif dnd_state == 'ON':
+            return True
+    except Exception as err:
+        return f"Errore di sistema: {err}"
+
 def set_dnd(client, username):
-    dnd_status = client.hget('Users'+ username, 'DoNotDisturb')
+    dnd_status = get_contact_dnd(client, username)
     print(f'Attualmente sei {dnd_status}.\n')
     try:
         if dnd_status == 'OFF':
@@ -25,7 +35,7 @@ def set_dnd(client, username):
             client.hset('Users'+ username, 'DoNotDisturb', 'OFF')
             print('Stato aggiornato a Non Disturbare!')
     except Exception as ee:
-        print(f"Errore di sistema: {ee}")
+        return f"Errore di sistema: {ee}"
         
     
 

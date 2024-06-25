@@ -17,7 +17,7 @@ try:
   # Use username_test as the field name itself
   redis_client.hset('User:'+ username_test, mapping = {'Username': username_test, 'Hashed-Password': dummy_hash_password, 'DoNotDisturb': 'OFF'})
 except Exception as e:
-  print(f"Error setting hash: {e}")  # Print any errors encountered
+  print(f"An Error has occurred: {e}")  # Print any errors encountered
 
 
 print(redis_client.ping())
