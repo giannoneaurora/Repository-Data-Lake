@@ -1,6 +1,6 @@
 import redis as rd
 import bcrypt as bc
-#i mport pipreqs
+#import pipreqs
 
 
 host_name = 'redis-13428.c328.europe-west3-1.gce.redns.redis-cloud.com'
