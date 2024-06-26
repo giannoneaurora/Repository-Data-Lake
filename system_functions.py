@@ -12,14 +12,14 @@ def register_user(client):
             print('Password corretta!')
             break
     hashed_password = ph.hash_password(new_password)
-    new_user_mapping = create_mapping(new_username, hashed_password)
+    new_user_mapping = create_user_mapping(new_username, hashed_password)
     create_user(client, new_username, new_user_mapping)
     
 
 def create_user(client, username, new_user_mapping):
-    pass
+    client.hset(f"User:{username}", new_user_mapping)
 
-def create_mapping(username, hashed_password):
+def create_user_mapping(username, hashed_password):
     user_mapping = {"Username": username, "Hashed-Password": hashed_password, "DoNotDisturb": "OFF"}
     return user_mapping
 
