@@ -15,7 +15,7 @@ def register_user(client):
     return True
 
 def get_contact_dnd(client, contact):
-    dnd_state = client.hget('Users'+ contact, 'DoNotDisturb')
+    dnd_state = client.hget('User:'+ contact, 'DoNotDisturb')
     try:
         if dnd_state == 'OFF':
             return False
@@ -50,4 +50,5 @@ def save_user_info(user_id, user_info, client):
 # Funzione per recuperare le informazioni dell'utente
 def get_user_info(user_id, client):
     return client.hgetall(user_id)
-    
+
+# 
