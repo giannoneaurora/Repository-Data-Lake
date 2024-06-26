@@ -3,8 +3,16 @@ import time
 import user_interface as ui
 
 
-def create_chat(pubsub, user1, user2):
-    pubsub.subscribe()
+def create_chat(user1, user2, client):
+    room_id = create_room_id(user1, user2)
+
+    client.sadd(f'Rooms:{user1}', room_id)
+    client.sadd(f'Rooms:{user2}', room_id)
+    return({'id': room_id, 'names': [f'{user1}', f'{user2}']})
+
+
+
+
 
 def send_message(client, channel):
     if not ui.get_contact_dnd(client, user_receive):
@@ -27,6 +35,11 @@ def write_msg(client):
     return chat_mapping
 
 
-def create_room_id(user1,user2):
-    sorted_id = sorted(user1, user2) 
-    return f"{sorted_id[0]}:{sorted_id[1]}"
+def create_room_id(user1, user2):
+    try:
+        sorted_id = sorted(user1, user2) 
+        return f"{sorted_id[0]}:{sorted_id[1]}"
+    except Error as x:
+        print(f'Errore: {x}')
+
+
