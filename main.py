@@ -10,6 +10,7 @@ db_number = 0
 
 redis_client = rd.StrictRedis(host=host_name, port=port_number, db=db_number, charset="utf-8", decode_responses=True, password='kve34LU6Z6t9Wd5I09caDiHQOe7bNL5r')
 
+
 try:
   # Use username_test as the field name itself
   redis_client.hset('User:'+ username_test, mapping = {'Username': username_test, 'Hashed-Password': dummy_hash_password, 'DoNotDisturb': 'OFF'})
