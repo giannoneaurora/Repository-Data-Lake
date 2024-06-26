@@ -17,7 +17,7 @@ def register_user(client):
     
 
 def create_user(client, username, new_user_mapping):
-    pass
+    client.hset(f"User:{username}", new_user_mapping)
 
 def create_user_mapping(username, hashed_password):
     user_mapping = {"Username": username, "Hashed-Password": hashed_password, "DoNotDisturb": "OFF"}
