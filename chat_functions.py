@@ -11,25 +11,18 @@ redis_client = csc.get_client().redis_client
 # come output abbiamo un dizionario contenente l'identificativo della stanza
 
 
-def create_chat_room(client, user1, user2):
+def create_chat(user1, user2, client):
     room_id = create_room_id(user1, user2)
-    room_1 = f'Rooms:{user1}'
-    room_2 = f'Rooms:{user2}'
 
-    client.sadd(room_1, room_id)
-    client.sadd(room_2, room_id)
-    return({'id': room_id, 'names': [f'{user1}', f'{user2}']})
-
-
-# Creiamo una funzione che invia un messaggio ad un canale specifico. 
-# Se il destinatario ha attiva la modalità "Do Not Disturb", la funzione 
-# ritorna un messaggio di avviso. Altrimenti, il messaggio viene pubblicato sul canale 
-# utilizzando il client Redis.
+    client.sadd(f'Rooms:{user1}', room_id)
+    client.sadd(f'Rooms:{user2}', room_id)
+    return{'id': room_id, 'names': [f'{user1}', f'{user2}']}, False
 
 
 def send_message(client, channel):
-    if not ui.get_contact_dnd(client, user_receive):
+    if not ui.get_contact_dnd(client):
         return f"L'utente ha la modalità Do Not Disturb attiva! Riprova più tardi!" 
+    message = write_msg(client)
     client.publish(channel, message)
 
 
@@ -55,7 +48,7 @@ def create_room_id(user1, user2):
     try:
         sorted_id = sorted(user1, user2) 
         return f"{sorted_id[0]}:{sorted_id[1]}"
-    except Error as x:
-        print(f'Errore: {x}')
+    except Exception as x:
+        return f'Errore: {x}'
 
 
