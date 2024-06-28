@@ -2,20 +2,8 @@ import redis as rd
 import time
 import password_hashing as ph
 
-
-def register_user(client):
-    print("Benvenuto nella chat!\n Iscriviti!\n")
-    username = str(input("Scrivi il nome utente: "))
-    if client.exists(username): #if username in client:
-        return False
-    password = str(input("Scrivi la password: "))
-    hashed_password = ph.hash_password(password)
-    client.hmset()
-    client.set()
-    return True
-
 def get_contact_dnd(client, contact):
-    dnd_state = client.hget('User:'+ contact, 'DoNotDisturb')
+    dnd_state = client.hget('User:'+contact, 'DoNotDisturb')
     try:
         if dnd_state == 'OFF':
             return False
@@ -37,12 +25,12 @@ def set_dnd(client, username):
     except Exception as ee:
         return f"Errore di sistema: {ee}"
         
-    
-
 
 def search_user(searched_user, client):
-    users = [u for u in client.keys() if searched_user in str(u)]
+    u_pattern = 'User:*'
+    users = [u for u in client.keys(pattern = u_pattern, decode_response = True) if searched_user in u[:]]
     return users
+
     
 def save_user_info(user_id, user_info, client):
     client.hmset(user_id, user_info)
@@ -51,4 +39,3 @@ def save_user_info(user_id, user_info, client):
 def get_user_info(user_id, client):
     return client.hgetall(user_id)
 
-# 
