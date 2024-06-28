@@ -2,6 +2,7 @@ import redis as rd
 import time
 import password_hashing as ph
 
+
 def get_contact_dnd(client, contact):
     dnd_state = client.hget('User:'+contact, 'DoNotDisturb')
     try:
@@ -28,7 +29,7 @@ def set_dnd(client, username):
 
 def search_user(searched_user, client):
     u_pattern = 'User:*'
-    users = [u for u in client.keys(pattern = u_pattern, decode_response = True) if searched_user in u[:]]
+    users = [u for u in client.keys(pattern = u_pattern, decode_response = True) if searched_user in u[0:]]
     return users
 
     
