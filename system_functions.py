@@ -31,3 +31,17 @@ def search_user(searched_user, client):
     u_pattern = f'User:{searched_user}*'
     users = [u for u in client.keys(pattern = u_pattern, decode_response = True)]
     return users
+
+
+def contact_list(username):
+  personal_c_pattern = f'Contacts:{username}'
+  book = [cc for cc in redis_client.smembers(personal_c_pattern)] 
+  return book
+
+def add_contact(username):
+    new_contact = 'User:' + str(input('Aggiungi un utente alla lista contatti: '))
+    if redis_client.sismember(f"Contacts:{username}", new_contact):
+        return "Utente già registrato!"
+    else:
+        redis_client.sadd('Contacts:'+ username, new_contact)
+        return 'Aggiunto contatto!'
