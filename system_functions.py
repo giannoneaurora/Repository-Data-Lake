@@ -7,7 +7,7 @@ redis_client = csc.get_client().redis_client
 
 def register_user():
     new_username = str(input('Scrivi il tuo nome utente: '))
-    if redis_client.exists(new_username):
+    if redis_client.exists(f"User:{new_username}"):
         return f"Utente già registrato!"
     new_password = str(input('Crea la tua password: '))
     hashed_password = ph.hash_password(new_password)
