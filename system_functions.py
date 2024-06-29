@@ -20,7 +20,11 @@ def register_user():
     
 
 def create_user(username, new_user_mapping):
-    redis_client.hset(f"User:{username}", new_user_mapping)
+    try:
+        redis_client.hset(f"User:{username}", new_user_mapping)
+        return "Utente registrato correttamente"
+    except Exception as eee:
+        return f"Errore nella registrazione: {eee}"
 
 def create_user_mapping(username, hashed_password):
     user_mapping = {"Username": username, "Hashed-Password": hashed_password, "DoNotDisturb": "OFF"}
