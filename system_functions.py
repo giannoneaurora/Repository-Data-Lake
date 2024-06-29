@@ -28,6 +28,6 @@ def create_user_mapping(username, hashed_password):
     return user_mapping
 
 def search_user(searched_user, client):
-    u_pattern = 'User:*'
-    users = [u for u in client.keys(pattern = u_pattern, decode_response = True) if searched_user in u[0:]]
+    u_pattern = f'User:{searched_user}*'
+    users = [u for u in client.keys(pattern = u_pattern, decode_response = True)]
     return users
