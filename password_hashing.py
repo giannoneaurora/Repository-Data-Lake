@@ -8,8 +8,8 @@ def hash_password(password):
 
 def check_password(password):
     entered_password = str(print('Reinserisci la password: '))
-    if entered_password != password:
-        return False
+    while password != entered_password:
+        print("Password non corretta!")
     return True
 
 
