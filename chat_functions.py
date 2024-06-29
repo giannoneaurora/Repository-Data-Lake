@@ -55,9 +55,8 @@ def create_room_id(user1, user2):
 
         # Create room ID with a separator and hash the combined string
         room_id = f"{room_id_part1}:{room_id_part2}"
-        hashed_room_id = hash(room_id)  # Assuming hash() returns a unique integer
 
-        return hashed_room_id
+        return room_id
     except TypeError:
         return "User IDs cannot be sorted for room creation."
 
