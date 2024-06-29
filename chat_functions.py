@@ -19,10 +19,10 @@ def create_chat(user1, user2, client):
     return {'id': room_id, 'names': [user1, user2]}
 
 
-def send_message(client, channel):
-    if not ui.get_contact_dnd(client):
-        return f"L'utente ha la modalità Do Not Disturb attiva! Riprova più tardi!" 
-    message = write_msg(client)
+def send_message(client, channel, user_sender):
+    if not ui.get_contact_dnd(channel, user_sender):
+        return "Do Not Disturb attiva! Riprova più tardi!" 
+    message = write_msg(channel)
     client.publish(channel, message)
 
 
@@ -34,11 +34,12 @@ def show_chat(pubsub):
 def handle_message(message):
     print(f"Received message: {message['data'].decode('utf-8')}")
 
-def write_msg(client):
+def write_msg():
     msg_text = str(input("Scrivi il messaggio: "))
-    msg_time = time.time().strftime('%H:%M:%S')
-    chat_mapping = {"Messaggio: " + msg_text,"OrarioInvio: " + msg_time}
-    return chat_mapping
+    #msg_time = time.time().strftime('%H:%M:%S')
+    #chat_mapping = {"Messaggio: " + msg_text,"OrarioInvio: " + msg_time}
+    encoded_msg = msg_text.encode('utf-8')
+    return encoded_msg
 
 # Creiamo una funzione che genera un identificativo di 
 # stanza univoco per due utenti. Ordiniamo i nomi degli utenti e li 
