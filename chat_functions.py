@@ -46,9 +46,19 @@ def write_msg(client):
 
 def create_room_id(user1, user2):
     try:
-        sorted_id = sorted(user1, user2) 
-        return f"{sorted_id[0]}:{sorted_id[1]}"
-    except Exception as x:
-        return f'Errore: {x}'
+        # Combine user IDs (order doesn't matter)
+        room_id_part1 = user1
+        room_id_part2 = user2
+        if user1 > user2:  # Or use any other comparison logic
+            room_id_part1 = user2
+            room_id_part2 = user1
+
+        # Create room ID with a separator and hash the combined string
+        room_id = f"{room_id_part1}:{room_id_part2}"
+        hashed_room_id = hash(room_id)  # Assuming hash() returns a unique integer
+
+        return hashed_room_id
+    except TypeError:
+        return "User IDs cannot be sorted for room creation."
 
 
