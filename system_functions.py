@@ -9,11 +9,7 @@ def register_user():
     new_username = str(input('Scrivi il tuo nome utente: '))
     if redis_client.exists(new_username):
         return f"Utente già registrato!"
-    while True:
-        new_password = str(input('Crea la tua password: '))
-        if ph.check_password(new_password):
-            print('Password corretta!')
-        break
+    new_password = str(input('Crea la tua password: '))
     hashed_password = ph.hash_password(new_password)
     new_user_mapping = create_user_mapping(new_username, hashed_password)
     create_user(redis_client, new_username, new_user_mapping)
