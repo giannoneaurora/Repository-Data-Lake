@@ -16,7 +16,7 @@ def create_chat(user1, user2, client):
 
     client.sadd('Rooms:'+user1, room_id)
     client.sadd('Rooms:'+user2, room_id)
-    return {'id': room_id, 'names': [{user1}, {user2}]}
+    return {'id': room_id, 'names': [user1, user2]}
 
 
 def send_message(client, channel):
