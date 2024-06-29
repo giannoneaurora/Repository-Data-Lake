@@ -26,14 +26,6 @@ def send_message(client, channel, user_sender):
     client.publish(channel, message)
 
 
-def show_chat(pubsub):
-    for msg in pubsub.listen():
-        if msg['type'] == 'message':
-            handle_message(message)
-
-def handle_message(message):
-    print(f"Received message: {message['data'].decode('utf-8')}")
-
 def write_msg():
     msg_text = str(input("Scrivi il messaggio: "))
     #msg_time = time.time().strftime('%H:%M:%S')
@@ -55,7 +47,7 @@ def create_room_id(user1, user2):
             room_id_part2 = user1
 
         # Create room ID with a separator and hash the combined string
-        room_id = f"{room_id_part1}:{room_id_part2}"
+        room_id = f"Chat:{room_id_part1}:{room_id_part2}"
 
         return room_id
     except TypeError:
