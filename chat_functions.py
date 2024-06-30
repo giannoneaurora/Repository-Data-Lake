@@ -2,8 +2,10 @@ import redis
 import time
 import user_interface as ui
 import client_server_connection as csc
+import system_function as sf 
 
 redis_client = csc.get_client().redis_client
+pubsub = csc.get_client().pubsub
 
 # Creiamo una stanza tra due utenti, nel nostro caso user 1 e user 2.
 # Diamo un identificativo alla stanza, aggiungiamo questo identificativo
@@ -54,7 +56,7 @@ def create_room_id(user1, user2):
 
 def show_chat(channel_name):
     message = pubsub.get_message()
-    get_past_msg(channel_name)
+    sf.get_past_msg(channel_name)
     for message in pubsub.listen():
     # Check if the message is from the subscribed channel
         if message['channel'] == channel_name:
