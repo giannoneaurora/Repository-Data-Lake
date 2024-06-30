@@ -52,3 +52,10 @@ def create_room_id(user1, user2):
         return "User IDs cannot be sorted for room creation."
 
 
+def show_chat(channel_name):
+    message = pubsub.get_message()    
+    for message in pubsub.listen():
+    # Check if the message is from the subscribed channel
+        if message['channel'] == channel_name:
+            print(f"Received message on {channel_name}: {message['data']}")
+
