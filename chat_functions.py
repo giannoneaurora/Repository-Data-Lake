@@ -20,16 +20,14 @@ def create_chat(user1, user2, client):
 
 
 def send_message(client, channel, user_sender):
-    if not ui.get_contact_dnd(channel, user_sender):
+    if ui.get_contact_dnd(client, user_sender):
         return "Do Not Disturb attiva! Riprova più tardi!" 
-    message = write_msg(channel)
+    message = write_msg()
     client.publish(channel, message)
 
 
 def write_msg():
     msg_text = str(input("Scrivi il messaggio: "))
-    #msg_time = time.time().strftime('%H:%M:%S')
-    #chat_mapping = {"Messaggio: " + msg_text,"OrarioInvio: " + msg_time}
     encoded_msg = msg_text.encode('utf-8')
     return encoded_msg
 
