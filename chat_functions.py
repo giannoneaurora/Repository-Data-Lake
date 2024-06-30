@@ -53,7 +53,8 @@ def create_room_id(user1, user2):
 
 
 def show_chat(channel_name):
-    message = pubsub.get_message()    
+    message = pubsub.get_message()
+    get_past_msg(channel_name)
     for message in pubsub.listen():
     # Check if the message is from the subscribed channel
         if message['channel'] == channel_name:
