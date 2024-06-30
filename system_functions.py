@@ -66,3 +66,15 @@ def decode_msg(message):
     msg_info = message.split(';')
     decoded_msg = f'{msg_info[0]} [{msg_info[2]}]'.replace('\'','')
     return decoded_msg
+
+def login(client):
+    username_input = str(input('Scrivi il tuo username: '))
+    user_key = f"User:{username_input}"
+    if not client.exists(user_key):
+        return "L'utente non esiste!"
+    password_input = str(input('Inserisci la tua password: '))
+    hashed_password_input = ph.hash_password(password_input)
+    user_password = client.hget(user_key,'Hashed-Password')
+    if hashed_password_input != user_password:
+        return "Password errata!"
+    return "Benvenuto nella chat!"
