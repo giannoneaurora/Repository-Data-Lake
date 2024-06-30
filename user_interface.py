@@ -13,19 +13,18 @@ def get_contact_dnd(client, contact):
     except Exception as err:
         return f"Errore di sistema: {err}"
 
-def set_dnd(client, username):
-    dnd_status = get_contact_dnd(client, username)
+def set_dnd(client, contact):
+    dnd_status = client.hget('User:' + contact, 'DoNotDisturb')
     print(f'Attualmente sei {dnd_status}.\n')
     try:
         if dnd_status == 'OFF':
-            client.hset('Users'+ username, 'DoNotDisturb', 'ON')
+            client.hset('User:'+ contact, 'DoNotDisturb', 'ON')
             print('Stato aggiornato ad Attivo!')
         elif dnd_status == 'ON':
-            client.hset('Users'+ username, 'DoNotDisturb', 'OFF')
+            client.hset('User:'+ contact, 'DoNotDisturb', 'OFF')
             print('Stato aggiornato a Non Disturbare!')
     except Exception as ee:
         return f"Errore di sistema: {ee}"
-        
 
 def search_user(searched_user, client):
     u_pattern = 'User:*'
