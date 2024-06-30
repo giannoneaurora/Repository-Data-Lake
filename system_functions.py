@@ -45,3 +45,24 @@ def add_contact(username):
     else:
         redis_client.sadd('Contacts:'+ username, new_contact)
         return 'Aggiunto contatto!'
+
+def store_message(message, user_sender, channel):
+    time_1 = time.time()
+    msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
+    msg_info = f'{message};{user_sender};{msg_time}'
+    redis_client.rpush(f'Messages:{channel}', msg_info)
+
+def get_past_msg(channel):
+    msg_pattern = f'Messages:{channel}'
+    msg_list = redis_client.keys(pattern=msg_pattern)
+    msg_list_key = msg_list[0]
+    msg_list = redis_client.lrange(msg_list_key, -10, -1)
+    for msg in msg_list[::-1]:
+        decoded_msg = decode_msg(msg)
+        print(decoded_msg)
+
+def decode_msg(message):
+    message = message[1:]
+    msg_info = message.split(';')
+    decoded_msg = f'{msg_info[0]} [{msg_info[2]}]'.replace('\'','')
+    return decoded_msg
