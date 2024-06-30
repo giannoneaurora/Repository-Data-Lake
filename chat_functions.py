@@ -2,7 +2,7 @@ import redis
 import time
 import user_interface as ui
 import client_server_connection as csc
-import system_function as sf 
+import system_functions as sf 
 
 redis_client = csc.get_client().redis_client
 pubsub = csc.get_client().pubsub
