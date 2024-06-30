@@ -1,7 +1,4 @@
 import redis as rd
-import time
-import password_hashing as ph
-
 
 def get_contact_dnd(client, contact):
     dnd_state = client.hget('User:'+contact, 'DoNotDisturb')
@@ -26,16 +23,5 @@ def set_dnd(client, contact):
     except Exception as ee:
         return f"Errore di sistema: {ee}"
 
-def search_user(searched_user, client):
-    u_pattern = 'User:*'
-    users = [u for u in client.keys(pattern = u_pattern, decode_response = True) if searched_user in u[0:]]
-    return users
 
-    
-def save_user_info(user_id, user_info, client):
-    client.hmset(user_id, user_info)
-
-# Funzione per recuperare le informazioni dell'utente
-def get_user_info(user_id, client):
-    return client.hgetall(user_id)
 
