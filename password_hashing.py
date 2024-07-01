@@ -1,10 +1,16 @@
-import bcrypt
+import bcrypt 
+
 
 def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_password
 
-def check_password(hashed_password, user_password):
-    return bcrypt.checkpw(user_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+def check_password(password):
+    entered_password = str(print('Reinserisci la password: '))
+    while password != entered_password:
+        print("Password non corretta!")
+    return True
 
 
 # This function makes sure the password is safe

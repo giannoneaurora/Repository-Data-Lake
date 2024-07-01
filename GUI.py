@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox, simpledialog
 import redis
 import time
 import client_server_connection as csc
-from password_hashing import hash_password , check_password
 
 # Connect to the Redis server
 redis_client = csc.get_client().redis_client
@@ -104,8 +103,8 @@ class ChatApp:
             self.login_label.configure(text="L'utente non esiste!")
             logged_in = False
         else:
-            user_password = redis_client.hget(f"User:{username_input}", 'Hashed-Password').decode('utf-8')
-            if logged_in and not check_password(user_password, password_input):
+            user_password = redis_client.hget(f"User:{username_input}", 'Hashed-Password')
+            if logged_in and user_password != password_input:
                 self.login_label.configure(text="Password errata!")
                 logged_in = False
 
@@ -116,9 +115,8 @@ class ChatApp:
     def register(self):
         username = self.username.get()
         password = self.password.get()
-        hashed_password = hash_password(password)
         if not redis_client.exists(f"User:{username}"):
-            user_mapping = self.create_user_mapping(username, hashed_password)
+            user_mapping = self.create_user_mapping(username, password)
             self.create_user(redis_client, username, user_mapping)
             messagebox.showinfo("Success", "User registered successfully")
             self.create_login_page()
