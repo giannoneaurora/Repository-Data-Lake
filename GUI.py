@@ -7,7 +7,7 @@ from password_hashing import hash_password
 
 # Connect to the Redis server
 redis_client = csc.get_client().redis_client
-pubsub = redis_client.pubsub()
+pubsub = csc.get_client().pubsub
 
 class ChatApp:
     def __init__(self, root):
@@ -148,9 +148,8 @@ class ChatApp:
                     channel = self.create_room_id(self.username.get(), recipient)
                     time_1 = time.time()
                     msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
-                    formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
-                    encoded_message = self.write_msg(formatted_msg)
-                    redis_client.publish(channel, encoded_message)
+                    formatted_msg = f"> {self.username.get()}: {message} [{msg_time}]"
+                    redis_client.publish(channel, formatted_msg)
                     self.store_message(formatted_msg, channel)
                 
                     # Update chat display immediately for sent message (on top)
@@ -159,12 +158,8 @@ class ChatApp:
                     self.message_var.set("")
 
                     # Notify the user about sending the message
-                    messagebox.showinfo("Sent Message", "Message sent successfully")
+                    #messagebox.showinfo("Sent Message", "Message sent successfully")
 
-
-    def write_msg(self, msg_text):
-        encoded_msg = msg_text
-        return encoded_msg
 
     def store_message(self, formatted_msg, channel):
         redis_client.rpush(f'Messages:{channel}', formatted_msg)
