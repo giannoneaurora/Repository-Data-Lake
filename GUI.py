@@ -139,23 +139,23 @@ class ChatApp:
         if message:
             recipient = self.recipient.get()  # Get the recipient from the combobox
             if recipient:
-                if recipient.startswith("temp_"):
-                    self.send_temp_message()
-                else:
-                    channel = self.create_room_id(self.username.get(), recipient)
-                    time_1 = time.time()
-                    msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
-                    formatted_msg = f"> {self.username.get()}: {message} [{msg_time}]"
-                    redis_client.publish(channel, formatted_msg)
-                    self.store_message(formatted_msg, channel)
-                
-                    # Update chat display immediately for sent message (on top)
-                    self.update_chat_display(formatted_msg, top=True)
-                
-                    self.message_var.set("")
-
-                    # Notify the user about sending the message
-                    #messagebox.showinfo("Sent Message", "Message sent successfully")
+                recipient_dnd_status = redis_client.hget(f"User:{recipient}", 'DoNotDisturb')
+                if recipient_dnd_status == 'ON':
+                    messagebox.showinfo("Do Not Disturb", f"{recipient} is in Do Not Disturb mode. Message not sent.")
+                return
+            
+            if recipient.startswith("temp_"):
+                self.send_temp_message()
+            else:
+                channel = self.create_room_id(self.username.get(), recipient)
+                time_1 = time.time()
+                msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
+                formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
+                encoded_message = self.write_msg(formatted_msg)
+                redis_client.publish(channel, encoded_message)
+                self.store_message(formatted_msg, channel)
+                self.update_chat_display(formatted_msg)  # Update chat display immediately for sent message
+                self.message_var.set("")
 
 
     def store_message(self, formatted_msg, channel):
