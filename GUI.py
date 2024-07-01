@@ -317,9 +317,14 @@ class ChatApp:
             self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
 
 
-    def update_chat_display(self, message):
+    def update_chat_display(self, message, top=False):
         self.chat_display.configure(state='normal')
-        self.chat_display.insert(tk.END, message + "\n")
+    
+        if top:
+            self.chat_display.insert('1.0', message + "\n")  # Insert at the beginning
+        else:
+            self.chat_display.insert(tk.END, message + "\n")  # Insert at the end
+    
         self.chat_display.configure(state='disabled')
 
     def clear_chat_display(self):
