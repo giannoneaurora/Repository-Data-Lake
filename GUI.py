@@ -309,7 +309,6 @@ class ChatApp:
                 self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
 
 
-
     def update_chat_display(self, message):
         self.chat_display.configure(state='normal')
         self.chat_display.insert(tk.END, message + "\n")
