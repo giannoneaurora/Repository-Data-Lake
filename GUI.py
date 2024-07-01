@@ -100,12 +100,13 @@ class ChatApp:
 
     def login(self, username_input, password_input):
         logged_in = True
+        hashed_password_input = hash_password(password_input)
         if not redis_client.exists(f"User:{username_input}"):
             self.login_label.configure(text="L'utente non esiste!")
             logged_in = False
         else:
             user_password = redis_client.hget(f"User:{username_input}", 'Hashed-Password')
-            if logged_in and password_input != user_password:
+            if logged_in and hashed_password_input != user_password:
                 self.login_label.configure(text="Password errata!")
                 logged_in = False
         
