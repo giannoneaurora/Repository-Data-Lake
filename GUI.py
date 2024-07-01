@@ -149,8 +149,15 @@ class ChatApp:
                     encoded_message = self.write_msg(formatted_msg)
                     redis_client.publish(channel, encoded_message)
                     self.store_message(formatted_msg, channel)
-                    self.update_chat_display(formatted_msg)  # Update chat display immediately for sent message
+                
+                    # Update chat display immediately for sent message (on top)
+                    self.update_chat_display(formatted_msg, top=True)
+                
                     self.message_var.set("")
+
+                    # Notify the user about sending the message
+                    messagebox.showinfo("Sent Message", "Message sent successfully")
+
 
     def write_msg(self, msg_text):
         encoded_msg = msg_text
@@ -296,17 +303,18 @@ class ChatApp:
         msg = message['data'].decode('utf-8')  # Decode the message
         sender_username = msg.split(':')[1].strip()  # Extract sender's username from the message
     
-        # Check if the message sender is the current user
-        if sender_username != self.username.get():
-            self.root.after(0, self.update_chat_display, msg)
-            self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message: {msg}"))
-        
-            # Reset the timer for temp chats
-            temp_chat_id = self.recipient.get()
-            if temp_chat_id.startswith("temp_"):
-                if hasattr(self, 'temp_chat_timer_id'):
-                    self.root.after_cancel(self.temp_chat_timer_id)
-                self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
+        # Update the chat display with the received message
+        self.update_chat_display(msg)
+    
+        # Notify the user about the new message
+        self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message from {sender_username}"))
+
+        # Reset the timer for temp chats
+        temp_chat_id = self.recipient.get()
+        if temp_chat_id.startswith("temp_"):
+            if hasattr(self, 'temp_chat_timer_id'):
+                self.root.after_cancel(self.temp_chat_timer_id)
+            self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
 
 
     def update_chat_display(self, message):
