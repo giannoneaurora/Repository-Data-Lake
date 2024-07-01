@@ -294,16 +294,20 @@ class ChatApp:
 
     def handle_message(self, message):
         msg = message['data'].decode('utf-8')  # Decode the message
-        if not msg.startswith(f"< {self.username.get()}:"):
+        sender_username = msg.split(':')[1].strip()  # Extract sender's username from the message
+    
+        # Check if the message sender is the current user
+        if sender_username != self.username.get():
             self.root.after(0, self.update_chat_display, msg)
             self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message: {msg}"))
         
-            # Reset the timer for temp chats if the message is in a temp chat
+            # Reset the timer for temp chats
             temp_chat_id = self.recipient.get()
             if temp_chat_id.startswith("temp_"):
                 if hasattr(self, 'temp_chat_timer_id'):
                     self.root.after_cancel(self.temp_chat_timer_id)
                 self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
+
 
 
     def update_chat_display(self, message):
@@ -315,7 +319,6 @@ class ChatApp:
         self.chat_display.configure(state='normal')
         self.chat_display.delete('1.0', tk.END)
         self.chat_display.configure(state='disabled')
-
 
     def update_recipient_list(self):
         contact_set = redis_client.smembers(f"Contacts:{self.username.get()}")
