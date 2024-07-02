@@ -141,7 +141,7 @@ class ChatApp:
                 recipient_dnd_status = redis_client.hget(f"User:{recipient}", 'DoNotDisturb')
                 if recipient_dnd_status == 'ON':
                     messagebox.showinfo("Do Not Disturb", f"{recipient} is in Do Not Disturb mode. Message not sent.")
-                return
+                    return
             
             if recipient.startswith("temp_"):
                 self.send_temp_message()
@@ -152,7 +152,7 @@ class ChatApp:
                 formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
                 redis_client.publish(channel, formatted_msg)
                 self.store_message(formatted_msg, channel)
-                self.update_chat_display(formatted_msg)  # Update chat display immediately for sent message
+                #self.update_chat_display(formatted_msg, top=True)  # Update chat display immediately for sent message
                 self.message_var.set("")
 
 
@@ -235,18 +235,21 @@ class ChatApp:
                 temp_chat_id = self.create_temp_chat_id(self.username.get(), recipient)
                 redis_client.sadd(f"TempChats:{self.username.get()}", temp_chat_id)
                 redis_client.sadd(f"TempChats:{recipient}", temp_chat_id)
-        
+
                 # Immediately update the recipient list in the UI
                 self.update_recipient_list()
         
                 # Set the recipient to the temp chat ID
                 self.recipient.set(temp_chat_id)
-        
+
+                # Clear the chat display
+                self.clear_chat_display()
+
                 # Start the timer for destroying the temp chat
                 if hasattr(self, 'temp_chat_timer_id'):
                     self.root.after_cancel(self.temp_chat_timer_id)
                 self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
-        
+
                 messagebox.showinfo("Success", f"Temporary chat created with {recipient}.")
             else:
                 messagebox.showerror("Error", "Contact does not exist.")
@@ -287,7 +290,7 @@ class ChatApp:
             # Check if the tempchat exists and has messages
             if redis_client.exists(f"Messages:{temp_chat_id}"):
                 redis_client.publish(temp_chat_id, formatted_msg)
-                self.update_chat_display(formatted_msg, top=True)
+                #self.update_chat_display(formatted_msg, top=True)
                 self.message_var.set("")
                 # Reset the timer
                 if hasattr(self, 'temp_chat_timer_id'):
@@ -300,13 +303,25 @@ class ChatApp:
 
     def handle_message(self, message):
         msg = message['data']  # Decode the message
-        sender_username = msg.split(':')[1].strip()  # Extract sender's username from the message
-    
+        sender_username = msg.split(':')[0].strip()[2:]  # Extract sender's username from the message
+        current_user = self.username.get()
+
+        channel = message['channel']
+        if channel.startswith("Chat:"):
+            user1, user2 = channel.split(':')[1:]
+            recipient_username = user2 if user1 == current_user else user1
+        elif channel.startswith("temp_"):
+            user1, user2 = channel.split(':')[1:]
+            recipient_username = user2 if user1 == current_user else user1
+        else:
+            return
+
         # Update the chat display with the received message
         self.update_chat_display(msg, top=True)
     
         # Notify the user about the new message
-        self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message from {sender_username}"))
+        if recipient_username == current_user:
+            self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message from {sender_username}"))
 
         # Reset the timer for temp chats
         temp_chat_id = self.recipient.get()
