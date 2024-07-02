@@ -85,8 +85,7 @@ class ChatApp:
 
         # Start the pubsub listener thread
         self.pubsub_thread = pubsub.run_in_thread(sleep_time=0.001)
-        pubsub.psubscribe(**{f'Chat:*:{self.username.get()}': self.handle_message,
-                             'temp_*': self.handle_message})
+        pubsub.psubscribe(**{f'Chat:*:{self.username.get()}': self.handle_message, 'temp_*': self.handle_message})
 
     def clear_frames(self):
         for frame in [self.login_frame, self.register_frame, self.chat_frame]:
@@ -151,8 +150,7 @@ class ChatApp:
                 time_1 = time.time()
                 msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
                 formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
-                encoded_message = self.write_msg(formatted_msg)
-                redis_client.publish(channel, encoded_message)
+                redis_client.publish(channel, formatted_msg)
                 self.store_message(formatted_msg, channel)
                 self.update_chat_display(formatted_msg)  # Update chat display immediately for sent message
                 self.message_var.set("")
@@ -237,19 +235,22 @@ class ChatApp:
                 temp_chat_id = self.create_temp_chat_id(self.username.get(), recipient)
                 redis_client.sadd(f"TempChats:{self.username.get()}", temp_chat_id)
                 redis_client.sadd(f"TempChats:{recipient}", temp_chat_id)
-            
+        
+                # Immediately update the recipient list in the UI
+                self.update_recipient_list()
+        
                 # Set the recipient to the temp chat ID
                 self.recipient.set(temp_chat_id)
-                self.update_recipient_list()
-            
+        
                 # Start the timer for destroying the temp chat
                 if hasattr(self, 'temp_chat_timer_id'):
                     self.root.after_cancel(self.temp_chat_timer_id)
                 self.temp_chat_timer_id = self.root.after(60000, self.destroy_temp_chat, temp_chat_id)
-            
+        
                 messagebox.showinfo("Success", f"Temporary chat created with {recipient}.")
             else:
                 messagebox.showerror("Error", "Contact does not exist.")
+
 
 
     def destroy_temp_chat(self, temp_chat_id):
@@ -276,15 +277,17 @@ class ChatApp:
         message = self.message_var.get()
         temp_chat_id = self.recipient.get()
         if message and temp_chat_id.startswith("temp_"):
-            # Check if the tempchat still exists before sending the message
+            time_1 = time.time()
+            msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
+            formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
+        
+            # Store the message in Redis
+            redis_client.rpush(f"Messages:{temp_chat_id}", formatted_msg)
+        
+            # Check if the tempchat exists and has messages
             if redis_client.exists(f"Messages:{temp_chat_id}"):
-                time_1 = time.time()
-                msg_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time_1))
-                formatted_msg = f"< {self.username.get()}: {message} [{msg_time}]"
-                encoded_message = self.write_msg(formatted_msg)
-                redis_client.publish(temp_chat_id, encoded_message)
-                self.store_message(formatted_msg, temp_chat_id)
-                self.update_chat_display(formatted_msg)
+                redis_client.publish(temp_chat_id, formatted_msg)
+                self.update_chat_display(formatted_msg, top=True)
                 self.message_var.set("")
                 # Reset the timer
                 if hasattr(self, 'temp_chat_timer_id'):
@@ -294,12 +297,13 @@ class ChatApp:
                 messagebox.showerror("Error", "Temporary chat no longer exists.")
                 self.update_recipient_list()
 
+
     def handle_message(self, message):
-        msg = message['data'].decode('utf-8')  # Decode the message
+        msg = message['data']  # Decode the message
         sender_username = msg.split(':')[1].strip()  # Extract sender's username from the message
     
         # Update the chat display with the received message
-        self.update_chat_display(msg)
+        self.update_chat_display(msg, top=True)
     
         # Notify the user about the new message
         self.root.after(0, lambda: messagebox.showinfo("New Message", f"You have received a new message from {sender_username}"))
