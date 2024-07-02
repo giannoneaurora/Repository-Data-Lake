@@ -25,8 +25,6 @@ alla chat. Nella pagina di chat, l'utente ha a disposizione alcune funzionalità
   La formattazione dei messaggi è:
 	> <scrittore_messaggio> <messaggio> [<data_invio> <orario_invio>]
   es. > Paolo 'Hello World!' [2024-07-01 16:00:00]
-- ricevimento di notifiche push: quando un utente riceve un messaggio, a schermo compare una notifica all'utente
-  che ha ricevuto il messaggio
 - creazione di chat temporanea: l'utente può creare una chat a tempo con un suo contatto, la chat ha un timer di
   60 secondi dalla creazione. il timer viene aggiornato ogni volta che un utente invia un messaggio.
 
@@ -84,6 +82,7 @@ Il file program_test.py è stato utilizzato per poter testare le funzionalità d
 Nel file password_hashing.py sono presenti le funzioni per l'hashing della password per poter salvare le password nel server in sicurezza. Con l'implementazione della GUI, abbiamo deciso di non implementare la funzione di hashing dato che presentava errori. La funzione check_password_limitations, che permette di rendere la password più sicura, è stata solo abbozzata e non è stata implementata nel progetto. 
 La funzione per poter vedere tutti gli utenti sul server è presente nel main.py, ma non è stata data la possibilità all'utente di usarla. Stessa cosa per la funzione che mostra tutti i contatti, la funzione che mostra tutte le informazioni di un utente e altri funzioni del main. Abbiamo deciso di implementarle, ma solo come funzionalità di controllo e test del sistema.
 L'app non ha funzioni per poter cambiare linguaggio e tutti i messaggi di sistema sono in lingua inglese. 
+La funzionalità per le notifiche push è presente nel codice di GUI.py, ma presenta dei problemi e non funziona, tuttavia il display dei messaggi viene aggiornato
 
 
 --- modificare il server di connessione
@@ -100,8 +99,9 @@ Sostituendo tali valori coi propri dati è possibile cambiare il server di conne
 --- bug conosciuti
 - L'app non mostra errori nel caso non possa accedere al server di Redis
 - L'app potrebbe risultare lenta nella connessione al server
-- La funzionalità di chat temporanea mostra a display la chat all'utente che ha creato la chat, ma mostra i messaggi nella chat normale all'altro utente. 
-- Se l'app viene spenta mentre una chat temporanea è stata attivata, quando l'utente rientra ritrova la chat temporanea tra i propri contatti.
+- L'app potrebbe non aggiornare il display dei messaggi in tempo reale (non funziona sempre)
+- La funzionalità di chat temporanea forza l'utente a chattare solo nella chat temporanea
+- Se l'app viene spenta mentre una chat temporanea è stata attivata, quando l'utente rientra ritrova la chat temporanea tra i propri contatti. Dovrebbe tuttavia eliminarsi dopo aver mandato un messaggio.
 
 
 
