@@ -100,8 +100,8 @@ Sostituendo tali valori coi propri dati è possibile cambiare il server di conne
 --- bug conosciuti
 - L'app non mostra errori nel caso non possa accedere al server di Redis
 - L'app potrebbe risultare lenta nella connessione al server
-- La funzionalità di chat temporanea forza l'utente a chattare solo nella chat temporanea
-- Se l'app viene spenta mentre una chat temporanea è stata attivata, quando l'utente rientra ritrova la chat temporanea tra i propri contatti. Dovrebbe tuttavia eliminarsi dopo aver mandato un messaggio.
+- La funzionalità di chat temporanea mostra a display la chat all'utente che ha creato la chat, ma mostra i messaggi nella chat normale all'altro utente. 
+- Se l'app viene spenta mentre una chat temporanea è stata attivata, quando l'utente rientra ritrova la chat temporanea tra i propri contatti.
 
 
 
